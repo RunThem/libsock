@@ -6,41 +6,34 @@
 -->
 
   <h3 align="center">libsock</h3>
-  <p align="center">快速开始你的项目!</p>
+  <p align="center">快速创建常用的 `socket` !</p>
 </p>
 <br />
 
- 简单的C项目模板
- 
 ## 目录
 
 - [上手指南](#上手指南)
-  - [开发前的配置要求](#配置要求)
-  - [安装步骤](#安装步骤)
+  - [配置](#配置)
+  - [介绍](#介绍)
 - [作者](#作者)
 - [鸣谢](#鸣谢)
 
+##
+
 ### 上手指南
 
-将本仓库克隆至本地并改名.
+#### 配置
 
-###### 配置要求
+* [xmake](https://github.com/xmake-io/xmake) 项目构建工具
+* `C99` 语言标准
 
-1. [xmake](https://github.com/xmake-io/xmake) 项目构建工具
-2. [c2x compiler](https://zh.cppreference.com/w/c/23) 支持 `c2x` 标准的C编译器
+#### 介绍
 
-###### **安装步骤**
+在 `Linux C` 中, 我们可以使用 `BSD Socket Api` 来创建套接字, 只是操作底层接口太过与繁琐, 所有就有了 `libsock`, 它可以帮助开发者简化在 `Linux C` 中创建套接字的操作.
 
-```shell
-git clone https://github.com/RunThem/libsock.git ${your_repository}
-cd ${your_repository}
+具体的使用方式可以查看 `src/test.c`.
 
-bash -c 'sed -i "s/libsock/$(basename `pwd`)/g" README.md xmake.lua && git update-ref -d HEAD && git add . && git commit -m "first commit" && git remote remove origin'
-
-xmake f -m debug --toolchain=clang && xmake
-
-xmake lsp
-```
+##
 
 ### 作者
 
@@ -53,7 +46,3 @@ xmake lsp
 ### 鸣谢
 
 - [xmake](https://github.com/xmake-io/xmake)
-- [cc](https://github.com/JacksonAllan/CC)
-- [sds](https://github.com/antirez/sds)
-- [mimalloc](https://github.com/microsoft/mimalloc)
-- [dbg-macro](https://github.com/eerimoq/dbg-macro)
