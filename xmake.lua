@@ -2,7 +2,7 @@
 set_project('libsock')
 
 --- Project version
-set_version('0.0.1')
+set_version('1.0.0')
 
 --- xmake configure
 set_xmakever('2.6.1')
