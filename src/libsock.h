@@ -1,5 +1,9 @@
 #pragma once
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include <netinet/in.h>
 #include <stdbool.h>
 #include <unistd.h>
@@ -47,3 +51,7 @@ struct sock_conf_t {
 #define SOCK_RET_GETADDRINFO 5 /* getaddrinfo() call failed */
 
 int sock_open(sock_conf_t* conf);
+
+#ifdef __cplusplus
+} /* extern "C" */
+#endif
