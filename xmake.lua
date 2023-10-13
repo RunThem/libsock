@@ -29,10 +29,16 @@ target('libsock', function()
   add_headerfiles('src/libsock.h')
 end)
 
-target('test', function()
+target('server', function()
   set_kind('binary')
-  set_default(false)
-  add_files('src/test.c')
+  add_files('test/server.c')
+
+  add_deps('libsock')
+end)
+
+target('client', function()
+  set_kind('binary')
+  add_files('test/client.c')
 
   add_deps('libsock')
 end)
