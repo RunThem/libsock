@@ -4,8 +4,10 @@
 extern "C" {
 #endif
 
+#include <arpa/inet.h>
 #include <netinet/in.h>
 #include <stdbool.h>
+#include <sys/un.h>
 #include <unistd.h>
 
 #define SOCK_MAX_OPTS 4
@@ -42,13 +44,13 @@ struct sock_conf_t {
 #define SOCK_RET_OK          0 /* Ok */
 #define SOCK_RET_NULL        1 /* Pointer is NULL */
 #define SOCK_RET_CHECK       2 /* Paramerter error */
-#define SOCK_RET_SOCKET      5 /* socket() call failed */
-#define SOCK_RET_BIND        6 /* bind() call failed */
-#define SOCK_RET_LISTEN      7 /* listen() call failed */
-#define SOCK_RET_CONNECT     8 /* connect() call failed */
-#define SOCK_RET_FCNTL       3 /* fcntl() call failed */
-#define SOCK_RET_SETSOCKOPT  4 /* setsockopt() call failed */
-#define SOCK_RET_GETADDRINFO 5 /* getaddrinfo() call failed */
+#define SOCK_RET_SOCKET      3 /* socket() call failed */
+#define SOCK_RET_BIND        4 /* bind() call failed */
+#define SOCK_RET_LISTEN      5 /* listen() call failed */
+#define SOCK_RET_CONNECT     6 /* connect() call failed */
+#define SOCK_RET_FCNTL       7 /* fcntl() call failed */
+#define SOCK_RET_SETSOCKOPT  8 /* setsockopt() call failed */
+#define SOCK_RET_GETADDRINFO 9 /* getaddrinfo() call failed */
 
 int sock_open(sock_conf_t* conf);
 

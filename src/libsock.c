@@ -1,14 +1,10 @@
 #include "libsock.h"
 
 /* libs */
-#include <arpa/inet.h>
 #include <fcntl.h>
 #include <netdb.h>
 #include <stdint.h>
 #include <stdio.h>
-#include <string.h>
-#include <sys/socket.h>
-#include <sys/un.h>
 
 #undef u_if
 #define u_if(expr, _ret)                                                                           \
