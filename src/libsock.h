@@ -35,24 +35,28 @@ struct sock_conf_t {
 
   char* host;
   in_port_t port;
+
+  char* lhost;
+  in_port_t lport;
+
   int listen;
   bool nonblock;
 
   sock_opt_t opts[SOCK_MAX_OPTS];
 };
 
-#define SOCK_RET_OK          0 /* Ok */
-#define SOCK_RET_NULL        1 /* Pointer is NULL */
-#define SOCK_RET_CHECK       2 /* Paramerter error */
-#define SOCK_RET_SOCKET      3 /* socket() call failed */
-#define SOCK_RET_BIND        4 /* bind() call failed */
-#define SOCK_RET_LISTEN      5 /* listen() call failed */
-#define SOCK_RET_CONNECT     6 /* connect() call failed */
-#define SOCK_RET_FCNTL       7 /* fcntl() call failed */
-#define SOCK_RET_SETSOCKOPT  8 /* setsockopt() call failed */
-#define SOCK_RET_GETADDRINFO 9 /* getaddrinfo() call failed */
+#define SOCK_RET_OK          (0)  /* Ok */
+#define SOCK_RET_CHECK       (-1) /* Parameter error */
+#define SOCK_RET_SOCKET      (-2) /* socket() call failed */
+#define SOCK_RET_BIND        (-3) /* bind() call failed */
+#define SOCK_RET_LISTEN      (-4) /* listen() call failed */
+#define SOCK_RET_CONNECT     (-5) /* connect() call failed */
+#define SOCK_RET_FCNTL       (-6) /* fcntl() call failed */
+#define SOCK_RET_SETSOCKOPT  (-7) /* setsockopt() call failed */
+#define SOCK_RET_GETADDRINFO (-8) /* getaddrinfo() call failed */
 
-int sock_open(sock_conf_t* conf);
+extern int sock_open(sock_conf_t* conf);
+extern int sock_close(sock_conf_t* conf);
 
 #ifdef __cplusplus
 } /* extern "C" */

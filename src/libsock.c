@@ -105,12 +105,14 @@ err:
 }
 
 static int sock_open_inet(sock_conf_t* conf, sock_info_t* info) {
-  ret_t ret             = 0;
-  int fd                = -1;
-  char port_buf[6]      = {0};
-  struct addrinfo hints = {0};
-  struct addrinfo* res  = NULL;
-  struct addrinfo* ai   = NULL;
+  ret_t ret                 = 0;
+  int fd                    = -1;
+  char port_buf[6]          = {0};
+  struct addrinfo hints     = {0};
+  struct addrinfo* res      = NULL;
+  struct addrinfo* ai       = NULL;
+  struct sockaddr_in addr4  = {0};
+  struct sockaddr_in6 addr6 = {0};
 
   hints.ai_family   = info->family;
   hints.ai_socktype = info->type;
@@ -125,7 +127,7 @@ static int sock_open_inet(sock_conf_t* conf, sock_info_t* info) {
     hints.ai_flags |= AI_NUMERICHOST;
   }
 
-  snprintf(port_buf, sizeof(port_buf), "%u", conf->port);
+  snprintf(port_buf, sizeof(port_buf), "%u", info->port);
 
   ret = getaddrinfo(conf->host, port_buf, &hints, &res);
   u_if(ret != 0, SOCK_RET_GETADDRINFO);
@@ -151,6 +153,34 @@ static int sock_open_inet(sock_conf_t* conf, sock_info_t* info) {
         u_if(ret == -1, SOCK_RET_LISTEN);
       }
     } else { /* client */
+      if (conf->lport != 0) {
+        if (info->family == AF_INET) {
+          addr4.sin_family = AF_INET;
+          addr4.sin_port   = htons(conf->lport);
+
+          if (conf->lhost == NULL) {
+            addr4.sin_addr.s_addr = htonl(INADDR_ANY);
+          } else {
+            inet_pton(AF_INET, conf->lhost, &addr4.sin_addr);
+          }
+
+          ret = bind(fd, (struct sockaddr*)&addr4, sizeof(struct sockaddr_in));
+        } else if (info->family == AF_INET6) {
+          addr6.sin6_family = AF_INET6;
+          addr6.sin6_port   = htons(conf->lport);
+
+          if (conf->lhost == NULL) {
+            addr6.sin6_addr = in6addr_any;
+          } else {
+            inet_pton(AF_INET6, conf->lhost, &addr6.sin6_addr);
+          }
+
+          ret = bind(fd, (struct sockaddr*)&addr6, sizeof(struct sockaddr_in6));
+        }
+
+        u_if(ret == -1, SOCK_RET_BIND);
+      }
+
       if (info->type == SOCK_DGRAM) {
         break;
       }
@@ -187,6 +217,7 @@ static int sock_open_unix(sock_conf_t* conf, sock_info_t* info) {
   ret_t ret               = 0;
   int fd                  = 0;
   struct sockaddr_un addr = {0};
+  struct sockaddr_un host = {0};
   socklen_t addr_len      = sizeof(addr);
 
   fd = socket(info->family, info->type, info->protocol);
@@ -208,6 +239,14 @@ static int sock_open_unix(sock_conf_t* conf, sock_info_t* info) {
       u_if(ret == -1, SOCK_RET_LISTEN);
     }
   } else {
+    if (conf->lhost != NULL) {
+      host.sun_family = AF_LOCAL;
+      strncpy(host.sun_path, conf->host, strlen(conf->host));
+
+      ret = bind(fd, (struct sockaddr*)&host, sizeof(struct sockaddr_un));
+      u_if(ret == -1, SOCK_RET_BIND);
+    }
+
     ret = connect(fd, (struct sockaddr*)&addr, addr_len);
     u_if(ret == -1, SOCK_RET_CONNECT);
   }
@@ -228,7 +267,7 @@ int sock_open(sock_conf_t* conf) {
   ret_t ret        = 0;
   sock_info_t info = {0};
 
-  u_if(conf == NULL, SOCK_RET_NULL);
+  u_if(conf == NULL, SOCK_RET_CHECK);
 
   ret = sock_check(conf, &info);
   u_if(ret != SOCK_RET_OK, ret);
@@ -252,9 +291,33 @@ int sock_open(sock_conf_t* conf) {
 
   u_if(ret != SOCK_RET_OK, ret);
 
-  if (ret == SOCK_RET_OK && conf->nonblock) {
+  if (conf->nonblock) {
     ret = sock_set_nonblock(conf);
     u_if(ret != SOCK_RET_OK, ret);
+  }
+
+  return SOCK_RET_OK;
+
+err:
+  return ret;
+}
+
+int sock_close(sock_conf_t* conf) {
+  ret_t ret = 0;
+
+  u_if(conf == NULL, SOCK_RET_CHECK);
+  u_if(conf->fd == -1, SOCK_RET_CHECK);
+
+  close(conf->fd);
+
+  if (conf->type == SOCK_TYPE_LOCAL_UDP || conf->type == SOCK_TYPE_LOCAL_TCP) {
+    if (conf->host != NULL) {
+      unlink(conf->host);
+    }
+
+    if (conf->lhost != NULL) {
+      unlink(conf->host);
+    }
   }
 
   return SOCK_RET_OK;
