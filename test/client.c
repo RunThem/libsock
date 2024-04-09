@@ -14,6 +14,8 @@ int main(int argc, const char* argv[]) {
           .type = SOCK_TYPE_INET4_TCP,
           .host = "127.0.0.1",
           .port = 8080,
+
+          .lport = 9090,
       };
 
       /* create socket */
@@ -156,6 +158,28 @@ int main(int argc, const char* argv[]) {
 
       close(conf.fd);
       unlink(conf.host);
+    } break;
+    case '7': {
+      ret_t ret = 0;
+
+      sock_conf_t conf = {
+          .type  = SOCK_TYPE_INET4_TCP,
+          .host  = "www.baidu.com",
+          .port  = 443,
+          // .lhost = "127.0.0.1",
+          .lport = 9090,
+      };
+
+      /* create socket */
+      ret = sock_open(&conf);
+      log("client ret is %d, fd is %d", ret, conf.fd);
+
+      /* write & read */
+      send(conf.fd, &(int){1}, sizeof(int), 0);
+
+      // while (1) { }
+
+      close(conf.fd);
     } break;
     default:
       break;

@@ -36,7 +36,7 @@ int main(int argc, const char* argv[]) {
       send(fd, &(int){1}, sizeof(int), 0);
 
       close(fd);
-      close(conf.fd);
+      sock_close(&conf);
     } break;
     case '2': {
       ret_t ret               = 0;
