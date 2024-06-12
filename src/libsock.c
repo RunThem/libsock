@@ -241,7 +241,7 @@ static int sock_open_unix(sock_conf_t* conf, sock_info_t* info) {
   } else {
     if (conf->lhost != NULL) {
       host.sun_family = AF_LOCAL;
-      strncpy(host.sun_path, conf->host, strlen(conf->host));
+      strncpy(host.sun_path, conf->host, sizeof(host.sun_path) - 1);
 
       ret = bind(fd, (struct sockaddr*)&host, sizeof(struct sockaddr_un));
       u_if(ret == -1, SOCK_RET_BIND);
